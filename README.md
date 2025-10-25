@@ -87,10 +87,12 @@ Fully responsive — mobile-first by design
 You should have your own DATABASE_URL and JWT_SECRET
 
 #### User Frontend
-<img width="736" height="923" alt="user-frontend" src="https://github.com/user-attachments/assets/d5c3fa5d-ede5-462e-8574-e9a3f5b0b5e4" />
+<img width="1131" height="922" alt="User-Frontend" src="https://github.com/user-attachments/assets/287ceee0-8be4-46e2-9420-0b052eab6217" />
+
 
 #### Admin Frontend
-<img width="1461" height="922" alt="admin-frontend" src="https://github.com/user-attachments/assets/82e7075e-7fce-411e-ab9b-311dd0494930" />
+<img width="1131" height="922" alt="Admin-Frontend" src="https://github.com/user-attachments/assets/70f7201f-f65e-40a3-8dba-142386ccb0ca" />
+
 
 
 
