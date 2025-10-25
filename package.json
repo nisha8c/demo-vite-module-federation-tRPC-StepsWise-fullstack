@@ -1,0 +1,26 @@
+{
+  "name": "marathon-tracker",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:user": "npm --workspace apps/user-frontend run dev",
+    "dev:admin": "npm --workspace apps/admin-frontend run dev",
+    "dev:backend": "npm --workspace apps/backend run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "react-router-dom": "^7.9.4"
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.3.3"
+  }
+}
