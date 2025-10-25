@@ -86,3 +86,12 @@ Fully responsive — mobile-first by design
 ### For backend .env
 You should have your own DATABASE_URL and JWT_SECRET
 
+#### User Frontend
+<img width="736" height="923" alt="user-frontend" src="https://github.com/user-attachments/assets/d5c3fa5d-ede5-462e-8574-e9a3f5b0b5e4" />
+
+#### Admin Frontend
+<img width="1461" height="922" alt="admin-frontend" src="https://github.com/user-attachments/assets/82e7075e-7fce-411e-ab9b-311dd0494930" />
+
+
+
+
