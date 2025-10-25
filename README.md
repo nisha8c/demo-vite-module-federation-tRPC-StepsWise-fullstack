@@ -83,5 +83,6 @@ Fully responsive — mobile-first by design
 9. and for all three i.e. -  backend, user-frontend, admin-frontend - run using : npm run dev
 
 
-
+### For backend .env
+You should have your own DATABASE_URL and JWT_SECRET
 
