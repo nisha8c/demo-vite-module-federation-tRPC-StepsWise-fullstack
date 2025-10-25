@@ -21,7 +21,7 @@ where runners log their steps and the app automatically calculates how much mone
 
 ## 🧭 How It Works
 
-👟 Participants (User App)
+### 👟 Participants (User App)
 
 Register and log in securely
 
@@ -31,11 +31,12 @@ Instantly see how much money they’ve raised
 
 Mobile-first design with transparent, animated UI
 
-🧑‍💼 Admins (Admin App)
+### 🧑‍💼 Admins (Admin App)
 
 Log in as admin and manage all participants
 
-Add, edit, or delete users
+Edit, or delete users
+(No Adding users because Users are added when runner or walker signs up)
 
 Change the step threshold (e.g., 100 → 200 steps)
 
@@ -69,6 +70,18 @@ Clean glassmorphism cards, gradient glows, and subtle floating animations
 Toasts for every success/error feedback
 
 Fully responsive — mobile-first by design
+
+## How to run
+1. Clone the repo
+2. npm i
+3. cd user-frontend
+4. npm i
+5. cd admin-frontend
+6. npm i
+7. cd backend
+8. npm i
+9. and for all three i.e. -  backend, user-frontend, admin-frontend - run using : npm run dev
+
 
 
 
