@@ -7,8 +7,9 @@ import { toast } from "sonner";
 import { ParticipantCard } from "../components/ParticipantCard";
 import { SettingsPanel } from "../components/SettingsPanel";
 import { StatsDisplay } from "../components/StatsDisplay";
-import { AddParticipantForm } from "../components/AddParticipantForm";
+import { Button } from "user-frontend/src/components/ui/button";
 
+// ✅ Define a strong type for participants
 interface Participant {
     id: string;
     name: string;
@@ -18,22 +19,52 @@ interface Participant {
 export const Dashboard = () => {
     const { user, logout } = useAuth();
 
-    // Admin Settings
-    const [stepThreshold, setStepThreshold] = useState(100);
-    const [moneyPerThreshold, setMoneyPerThreshold] = useState(10);
+    // ✅ Settings
+    const getSettings = trpc.getSettings.useQuery();
+    const updateSettings = trpc.updateSettings.useMutation({
+        onSuccess: () => {
+            toast.success("Settings updated successfully!");
+            getSettings.refetch();
+        },
+        onError: () => toast.error("Failed to update settings"),
+    });
 
-    // Participants
-    const [participants, setParticipants] = useState<Participant[]>([]);
+    const [stepThreshold, setStepThreshold] = useState<number>(100);
+    const [moneyPerThreshold, setMoneyPerThreshold] = useState<number>(10);
+
+    // ✅ Sync settings with backend
+    useEffect(() => {
+        if (getSettings.data) {
+            setStepThreshold(getSettings.data.stepThreshold);
+            setMoneyPerThreshold(getSettings.data.moneyPerThreshold);
+        }
+    }, [getSettings.data]);
+
+    // ✅ Fetch all users
     const { data: allUsers, refetch } = trpc.adminGetAllUsers.useQuery();
 
-    // Derived values
-    const moneyPerStep = useMemo(
+    const deleteUser = trpc.adminDeleteUser.useMutation();
+    const updateSteps = trpc.updateSteps.useMutation();
+
+    // ✅ Ensure allUsers is correctly typed
+    const participants: Participant[] =
+        allUsers?.map((u: { id: string; name: string; steps: number | null }) => ({
+            id: u.id,
+            name: u.name,
+            steps: u.steps ?? 0,
+        })) ?? [];
+
+    // ✅ Derived values
+    const moneyPerStep = useMemo<number>(
         () => moneyPerThreshold / stepThreshold,
         [moneyPerThreshold, stepThreshold]
     );
 
     const totalStats = useMemo(() => {
-        const totalSteps = participants.reduce((sum, p) => sum + p.steps, 0);
+        const totalSteps = participants.reduce(
+            (sum: number, p: Participant) => sum + p.steps,
+            0
+        );
         const totalMoney = totalSteps * moneyPerStep;
         return {
             totalParticipants: participants.length,
@@ -42,53 +73,35 @@ export const Dashboard = () => {
         };
     }, [participants, moneyPerStep]);
 
-    // Mutations
-    const deleteUser = trpc.adminDeleteUser.useMutation();
-
-    // Load participants (admin fetches all users)
-    useEffect(() => {
-        if (allUsers) {
-            const formatted = allUsers.map((u) => ({
-                id: u.id,
-                name: u.name,
-                steps: u.steps ?? 0,
-            }));
-            setParticipants(formatted);
-        }
-    }, [allUsers]);
-
-    // Handlers
-    const handleAddParticipant = (name: string) => {
-        const newParticipant: Participant = {
-            id: Date.now().toString(),
-            name,
-            steps: 0,
-        };
-        setParticipants([...participants, newParticipant]);
+    // ✅ Handlers
+    const handleUpdateSettings = () => {
+        updateSettings.mutate({
+            stepThreshold,
+            moneyPerThreshold,
+        });
     };
 
-    const handleDeleteParticipant = async (id: string) => {
+    const handleDeleteUser = async (id: string) => {
         try {
             await deleteUser.mutateAsync({ userId: id });
             refetch();
-        } catch (err) {
-            console.error("Failed to delete user:", err);
+            toast.success("User deleted");
+        } catch {
+            toast.error("Failed to delete user");
         }
     };
 
-    const updateStepsMutation = trpc.updateSteps.useMutation();
     const handleUpdateSteps = async (id: string, steps: number) => {
         try {
-            // Update on server
-            await updateStepsMutation.mutateAsync({ userId: id, steps });
-            toast.success("Steps updated successfully!");
-            // Refresh users from backend
+            await updateSteps.mutateAsync({ userId: id, steps });
+            toast.success("Steps updated!");
             refetch();
-        } catch (err) {
-            console.error("Failed to update steps:", err);
-            toast.error("Failed to update steps.");
+        } catch {
+            toast.error("Failed to update steps");
         }
     };
+
+    if (getSettings.isLoading) return <p>Loading settings...</p>;
 
     return (
         <div className="min-h-screen py-8 px-4 md:px-8 bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -124,24 +137,22 @@ export const Dashboard = () => {
                     totalMoney={totalStats.totalMoney}
                 />
 
-                <SettingsPanel
-                    stepThreshold={stepThreshold}
-                    moneyPerThreshold={moneyPerThreshold}
-                    onStepThresholdChange={setStepThreshold}
-                    onMoneyPerThresholdChange={setMoneyPerThreshold}
-                />
-
-                {/* Settings and Add Participant
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Settings */}
+                <div className="space-y-4">
                     <SettingsPanel
                         stepThreshold={stepThreshold}
                         moneyPerThreshold={moneyPerThreshold}
                         onStepThresholdChange={setStepThreshold}
                         onMoneyPerThresholdChange={setMoneyPerThreshold}
                     />
-                    <AddParticipantForm onAdd={handleAddParticipant} />
+                    <Button
+                        onClick={handleUpdateSettings}
+                        disabled={updateSettings.isPending}
+                        className="w-full md:w-auto bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                        {updateSettings.isPending ? "Saving..." : "Save Settings"}
+                    </Button>
                 </div>
-                 */}
 
                 {/* Participants */}
                 <div>
@@ -151,14 +162,14 @@ export const Dashboard = () => {
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {participants.map((participant) => (
+                        {participants.map((participant: Participant) => (
                             <ParticipantCard
                                 key={participant.id}
                                 id={participant.id}
                                 name={participant.name}
                                 steps={participant.steps}
                                 moneyPerStep={moneyPerStep}
-                                onDelete={handleDeleteParticipant}
+                                onDelete={handleDeleteUser}
                                 onUpdateSteps={handleUpdateSteps}
                             />
                         ))}

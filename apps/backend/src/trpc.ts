@@ -74,6 +74,35 @@ export const appRouter = t.router({
             });
         }),
 
+    // ------------------ SETTINGS ------------------ //
+    getSettings: t.procedure.query(async () => {
+        let settings = await prisma.settings.findFirst();
+        if (!settings) {
+            settings = await prisma.settings.create({
+                data: { stepThreshold: 100, moneyPerThreshold: 10 },
+            });
+        }
+        return settings;
+    }),
+
+    updateSettings: t.procedure
+        .input(z.object({
+            stepThreshold: z.number().min(1),
+            moneyPerThreshold: z.number().min(0),
+        }))
+        .mutation(async ({ input }) => {
+            let settings = await prisma.settings.findFirst();
+            if (!settings) {
+                settings = await prisma.settings.create({ data: input });
+            } else {
+                settings = await prisma.settings.update({
+                    where: { id: settings.id },
+                    data: input,
+                });
+            }
+            return settings;
+        }),
+
     // Admin: Get all users
     adminGetAllUsers: t.procedure.query(async () => {
         return await prisma.user.findMany();

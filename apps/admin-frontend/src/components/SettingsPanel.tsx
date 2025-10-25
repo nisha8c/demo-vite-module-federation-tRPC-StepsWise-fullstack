@@ -1,6 +1,6 @@
 import { Settings } from "lucide-react";
-import {Input} from "user-frontend/src/components/ui/input";
-import {Label} from "user-frontend/src/components/ui/label";
+import { Input } from "user-frontend/src/components/ui/input";
+import { Label } from "user-frontend/src/components/ui/label";
 
 interface SettingsPanelProps {
     stepThreshold: number;
@@ -63,7 +63,9 @@ export const SettingsPanel = ({
                 </div>
 
                 <div className="gradient-energy rounded-xl p-4 mt-4">
-                    <p className="text-sm text-secondary-foreground/80">Current Rate</p>
+                    <p className="text-sm text-secondary-foreground/80">
+                        Current Rate
+                    </p>
                     <p className="text-xl font-bold text-secondary-foreground">
                         {moneyPerThreshold} SEK per {stepThreshold} steps
                     </p>

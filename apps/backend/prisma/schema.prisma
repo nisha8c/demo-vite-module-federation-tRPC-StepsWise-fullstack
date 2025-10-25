@@ -27,3 +27,10 @@ enum Role {
   ADMIN
   USER
 }
+
+model Settings {
+  id                String   @id @default(cuid())
+  stepThreshold     Int      @default(100)
+  moneyPerThreshold Float    @default(10)
+  updatedAt         DateTime @updatedAt
+}
